@@ -1,0 +1,58 @@
+--- Quadre1
+#name
+quadre_1_frame.png
+#position+angle Ini
+129
+120
+25
+#position+angle end
+423
+345
+25
+--- Quadre2
+#nomquadre.png\
+quadre_2_frame.png
+#posxIni
+123
+#posYini
+160
+#angleIni
+0
+#posxdest
+423
+#posydest
+335
+#angledest
+25
+--- Quadre3
+#nomquadre.png
+quadre_3_frame.png
+#posxIni
+215
+#posYini
+320
+#angleIni
+0
+#posxdest
+550
+#posydest
+600
+#angledest
+0
+--- Quadre4
+#nomquadre.png
+quadre_4_frame.png
+#posxIni
+236
+#posYini
+325
+#angleIni
+0
+#posxdest
+208
+#posydest
+230
+#angledest
+0
+#Aqui acaba el descriptor, cal tenir el $
+$

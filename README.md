@@ -1,2 +1,1 @@
-# aChameleonInTheMuseum
-follow this chameleon in this quest in the museum
+# A Chameleon in the museum : )
