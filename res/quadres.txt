@@ -1,3 +1,25 @@
+--- Tuto 1
+#name
+tutorial1.png
+#position+angle Ini
+266
+275
+0
+#position+angle end
+0
+0
+0
+--- Tuto 2
+#name
+tutorial2.png
+#position+angle Ini
+430
+460
+0
+#position+angle end
+145
+270
+25
 --- Quadre1
 #name
 quadre_1_frame.png
@@ -6,8 +28,8 @@ quadre_1_frame.png
 120
 25
 #position+angle end
-423
-345
+353
+560
 25
 --- Quadre2
 #nomquadre.png\
@@ -43,16 +65,56 @@ quadre_3_frame.png
 #nomquadre.png
 quadre_4_frame.png
 #posxIni
-236
-#posYini
-325
-#angleIni
+176
+600
 0
 #posxdest
 220
-#posydest
 232
-#angledest
+0
+--- Quadre5
+#nomquadre.png
+quadre_5_frame.png
+#posxIni
+65
+86
+0
+#posxdest
+570
+111
+0
+--- Quadre6
+#nomquadre.png
+quadre_6_frame.png
+#posxIni
+123
+440
+0
+#posxdest
+225
+110
+0
+--- Quadre7
+#nomquadre.png
+quadre_7_frame.png
+#posxIni
+0
+0
+0
+#posxdest
+428
+91
+0
+--- lastlast
+#nomquadre.png
+empty.png
+#posxIni
+0
+0
+0
+#posxdest
+0
+0
 0
 #Aqui acaba el descriptor, cal tenir el $
 $

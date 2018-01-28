@@ -364,7 +364,29 @@ int main(){
 		}	
 
 
-        if(gameState == EState::movingScreen){
+        if(gameState == EState::ending){
+            static float timer = 0.0;
+            timer += deltatime;
+            sf::Texture ending;
+            ending.loadFromFile("res/quadres/ending.png");
+            quadreToDraw->setTexture(ending);
+            int currentfinalFrame = 0;
+            const int finalFrames = 3;
+            const int finalframeheight = quadreToDraw->getGlobalBounds().height;
+            const int finalframeSize = quadreToDraw->getGlobalBounds().width;
+            quadreToDraw->setTextureRect( sf::IntRect(currentfinalFrame*finalframeSize,0,finalframeSize,finalframeheight));
+            if(timer >= 1){
+                currentfinalFrame = std::min(finalFrames-1,++currentfinalFrame);
+                quadreToDraw->setTextureRect( sf::IntRect(currentfinalFrame*finalframeSize,0,finalframeSize,finalframeheight));
+                timer = 0;
+            }
+
+            portada.display(&window, "res/end.png");
+            exit(0);
+
+
+        }
+        else if(gameState == EState::movingScreen){
 
             if(guardGone){
                 float movement = -600*deltatime;
@@ -681,62 +703,48 @@ int main(){
             }
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::V) && chameleon.chameleonLines.getPosition().x > HALF_BG_X){
-                //float cang = chameleon.chameleonLines.getRotation();
-                sf::Vector2f cpos = chameleon.chameleonLines.getPosition();
 
-                sf::Vector2f qpos = quadreToDraw->getPosition() - sf::Vector2f(quadreToDraw->getGlobalBounds().width/2,
-                                                                              quadreToDraw->getGlobalBounds().height/2);
+                 if(quadreIndex >= quadreDescriptors.size()) {
+                         gameState = EState::ending;
+                 }
+                 else {
+                     //float cang = chameleon.chameleonLines.getRotation();
+                    sf::Vector2f cpos = chameleon.chameleonLines.getPosition();
 
-                sf::Vector2f qinipos = quadreToPick->getPosition() - sf::Vector2f(quadreToPick->getGlobalBounds().width/2,
-                                                                                  quadreToPick->getGlobalBounds().height/2);
+                    sf::Vector2f qpos = quadreToDraw->getPosition() - sf::Vector2f(quadreToDraw->getGlobalBounds().width/2,
+                                                                                  quadreToDraw->getGlobalBounds().height/2);
 
-                QuadreDescriptor qdes = quadreDescriptors[quadreToDraw->indexInDescriptors];
-//                std::cout << "namedes-> " << qdes.name << " index ->" << quadreToPick->indexInDescriptors << std::endl;
-                QuadreDescriptor qini = quadreDescriptors[quadreToPick->indexInDescriptors];
-            //    std::cout << "nameini-> " << qini.name << " index ->" << quadreToDraw->indexInDescriptors <<std::endl;
+                    sf::Vector2f qinipos = quadreToPick->getPosition() - sf::Vector2f(quadreToPick->getGlobalBounds().width/2,
+                                                                                      quadreToPick->getGlobalBounds().height/2);
 
+                    QuadreDescriptor qdes = quadreDescriptors[quadreToDraw->indexInDescriptors];
+                    QuadreDescriptor qini = quadreDescriptors[quadreToPick->indexInDescriptors];
+    //                std::cout << "namedes-> " << qdes.name << " index ->" << quadreToPick->indexInDescriptors << std::endl;
+                //    std::cout << "nameini-> " << qini.name << " index ->" << quadreToDraw->indexInDescriptors <<std::endl;
+    //                std::cout << "chamrespecte q2: "<< cpos.x-qpos.x << " , " << cpos.y-qpos.y << std::endl;
+       /*             std::cout << "cham: "<< cpos.x << " , " << cpos.y << std::endl; std::cout << "dest: "<< qpos.x+qdes.dest.posx << " , " << qpos.y+qdes.dest.posy << std::endl;                    std::cout << "inicham: "<< anchorWhenCoppyed.posx << " , " << anchorWhenCoppyed.posy << std::endl;                    std::cout << "iniq;  " << qinipos.x+qini.init.posx << " , " << qinipos.y+qini.init.posy << std::endl;
+                    std::cout << "if: " << ( (cpos.x > (qpos.x+qdes.dest.posx - 40)) && (cpos.x < (qpos.x+qdes.dest.posx + 40))&& (cpos.y > (qpos.y+qdes.dest.posy - 40))&& (cpos.y < (qpos.y+qdes.dest.posy + 40)) ) << " , " << ( (anchorWhenCoppyed.posx > (qinipos.x+qini.init.posx - 80)) && (anchorWhenCoppyed.posx < (qinipos.x+qini.init.posx + 80))&& (anchorWhenCoppyed.posy > (qinipos.y+qini.init.posy - 80)) && (anchorWhenCoppyed.posy < (qinipos.y+qini.init.posy + 80)) )<< std::endl;
+                    std::cout << "According to this, i started at " <<(anchorWhenCoppyed.posx - qinipos.x)<< " " <<(anchorWhenCoppyed.posy - qinipos.y)<< std::endl;*/
 
-//                std::cout << "chamrespecte q2: "<< cpos.x-qpos.x << " , " << cpos.y-qpos.y << std::endl;
-
-   /*             std::cout << "cham: "<< cpos.x << " , " << cpos.y << std::endl;
-                std::cout << "dest: "<< qpos.x+qdes.dest.posx << " , " << qpos.y+qdes.dest.posy << std::endl;
-                std::cout << "inicham: "<< anchorWhenCoppyed.posx << " , " << anchorWhenCoppyed.posy << std::endl;
-                std::cout << "iniq;  " << qinipos.x+qini.init.posx << " , " << qinipos.y+qini.init.posy << std::endl;
-
-                std::cout << "if: " << ( (cpos.x > (qpos.x+qdes.dest.posx - 40))
-                             && (cpos.x < (qpos.x+qdes.dest.posx + 40))
-                             && (cpos.y > (qpos.y+qdes.dest.posy - 40))
-                             && (cpos.y < (qpos.y+qdes.dest.posy + 40)) )
-                             << " , " <<
-                              ( (anchorWhenCoppyed.posx > (qinipos.x+qini.init.posx - 80))
-                             && (anchorWhenCoppyed.posx < (qinipos.x+qini.init.posx + 80))
-                             && (anchorWhenCoppyed.posy > (qinipos.y+qini.init.posy - 80))
-                             && (anchorWhenCoppyed.posy < (qinipos.y+qini.init.posy + 80)) )<< std::endl;
-
-                std::cout << "According to this, i started at " <<
-                            (anchorWhenCoppyed.posx - qinipos.x)
-                            << " " <<
-                            (anchorWhenCoppyed.posy - qinipos.y)
-                            << std::endl;*/
-
-                if(  (cpos.x > (qpos.x+qdes.dest.posx - 40))
-                  && (cpos.x < (qpos.x+qdes.dest.posx + 40))
-                  && (cpos.y > (qpos.y+qdes.dest.posy - 40))
-                  && (cpos.y < (qpos.y+qdes.dest.posy + 40))
-                //&& cang > qdes.dest.angle-5 && cang < qdes.dest.angle+5
-                  && (anchorWhenCoppyed.posx > (qinipos.x+qini.init.posx - 80))
-                  && (anchorWhenCoppyed.posx < (qinipos.x+qini.init.posx + 80))
-                  && (anchorWhenCoppyed.posy > (qinipos.y+qini.init.posy - 80))
-                  && (anchorWhenCoppyed.posy < (qinipos.y+qini.init.posy + 80))
-                //&& anchorWhenCoppyed.angle > qini.dest.angle-5 && anchorWhenCoppyed.angle < qini.dest.angle+5
-                        ) {
-                    screenMovement = 0;
-                    gameState = EState::movingScreen;
-                    gameState = EState::movingScreen;
-                    guardGone = false;
-                    guardAnimated = true;
-                    animationDone = false;
-                    timeSinceLastAnimGuard = 0;
+                    if(  (cpos.x > (qpos.x+qdes.dest.posx - 40))
+                      && (cpos.x < (qpos.x+qdes.dest.posx + 40))
+                      && (cpos.y > (qpos.y+qdes.dest.posy - 40))
+                      && (cpos.y < (qpos.y+qdes.dest.posy + 40))
+                    //&& cang > qdes.dest.angle-5 && cang < qdes.dest.angle+5
+                      && (anchorWhenCoppyed.posx > (qinipos.x+qini.init.posx - 80))
+                      && (anchorWhenCoppyed.posx < (qinipos.x+qini.init.posx + 80))
+                      && (anchorWhenCoppyed.posy > (qinipos.y+qini.init.posy - 80))
+                      && (anchorWhenCoppyed.posy < (qinipos.y+qini.init.posy + 80))
+                    //&& anchorWhenCoppyed.angle > qini.dest.angle-5 && anchorWhenCoppyed.angle < qini.dest.angle+5
+                            ) {
+                        screenMovement = 0;
+                        gameState = EState::movingScreen;
+                        gameState = EState::movingScreen;
+                        guardGone = false;
+                        guardAnimated = true;
+                        animationDone = false;
+                        timeSinceLastAnimGuard = 0;
+                    }
                 }
             }
 
