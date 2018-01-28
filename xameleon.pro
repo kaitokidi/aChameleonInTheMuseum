@@ -7,6 +7,7 @@ QMAKE_CXXFLAGS += -std=c++11
 
 LIBS += -lsfml-system -lsfml-graphics -lsfml-window -lsfml-audio
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+         Portada.cpp
 
-HEADERS +=
+HEADERS += Portada.hpp

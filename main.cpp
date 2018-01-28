@@ -8,6 +8,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <stdio.h>
+#include <Portada.hpp>
 
 bool isWhite(sf::Image& image, float px, float py){
 	return image.getPixel(px, py) == sf::Color::White;
@@ -100,10 +101,23 @@ int main(){
 
     window.setFramerateLimit(60);
 
+
+
+    Portada portada;
+    portada.display(&window, "res/portada0.png");
+
+
+
     sf::Music m;
-    m.openFromFile("res/music.ogg");
+    m.openFromFile("res/gramatik_just_jammin.ogg");
     m.setLoop(true);
-    //m.play();
+    m.setVolume(75);
+    m.play();
+
+    sf::SoundBuffer buffer;
+    buffer.loadFromFile("res/attack.ogg");
+    sf::Sound stepsound;
+    stepsound.setBuffer(buffer);
 
 
     std::vector<QuadreDescriptor> quadreDescriptors;
@@ -273,8 +287,6 @@ int main(){
   //  const int HALF_OVBG_X = overbgs[0].getGlobalBounds().width/2;
 
 
-
-
     quadreToPick->setOrigin(quadreToPick->getGlobalBounds().width/2,quadreToPick->getGlobalBounds().height/2);
     quadreToDraw->setOrigin(quadreToDraw->getGlobalBounds().width/2,quadreToDraw->getGlobalBounds().height/2);
     quadreForTransition->setOrigin(quadreForTransition->getGlobalBounds().width/2,quadreForTransition->getGlobalBounds().height/2);
@@ -304,7 +316,7 @@ int main(){
     guardS.setTextureRect(sf::IntRect(currentGuardFrame*GUARD_FRAME_WIDTH, 0,
                                                   GUARD_FRAME_WIDTH, GUARD_HEIGHT));
 
-    guardS.setPosition(-400, BG_Y-guardS.getGlobalBounds().height-10);
+    guardS.setPosition(-800, BG_Y-guardS.getGlobalBounds().height-10);
 
     //GAME LOOP
 	while(window.isOpen()){
@@ -327,6 +339,7 @@ int main(){
                 }
                 if (event.key.code == sf::Keyboard::N) {
                     screenMovement = 0;
+                    //m.pause();
                     gameState = EState::movingScreen;
                     guardGone = false;
                     timeSinceLastAnimGuard = 0;
@@ -387,6 +400,9 @@ int main(){
                     ++quadreIndex;
 
                     gameState = EState::playing;
+
+                    m.setVolume(75);
+//                    m.play();
                 }
             }
             else {
@@ -395,6 +411,8 @@ int main(){
                 timeSinceLastAnimGuard += deltatime;
 
                 if(timeSinceLastAnimGuard >= guardAnimTimer){
+                    m.setVolume(m.getVolume()*0.5);
+
                     timeSinceLastAnimGuard = 0;
                     currentGuardFrame = (currentGuardFrame + 1)%GUARD_FRAMES;
                     guardS.setTextureRect(sf::IntRect(currentGuardFrame*GUARD_FRAME_WIDTH, 0,
@@ -402,7 +420,7 @@ int main(){
                 }
 
                 if(guardS.getPosition().x >= BG_X +270){
-                    guardS.setPosition(sf::Vector2f(-400,guardS.getPosition().y));
+                    guardS.setPosition(sf::Vector2f(-800,guardS.getPosition().y));
                     guardGone = true;
                 }
 
@@ -485,7 +503,7 @@ int main(){
             static float lastCpressedTimer = 0;
             if(Cpressed){
                 lastCpressedTimer += deltatime;
-                if(lastCpressedTimer >= 0.2){
+                if(lastCpressedTimer >= 0.4){
                     onetimeC = 0;
                 }
             }
@@ -553,6 +571,7 @@ int main(){
                     anchorWhenCoppyed.angle = chameleon.chameleonLines.getRotation();
                     anchorWhenCoppyed.posx = chameleon.chameleonLines.getPosition().x;
                     anchorWhenCoppyed.posy = chameleon.chameleonLines.getPosition().y;
+                    stepsound.play();
 
             }
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::X)){
@@ -604,6 +623,10 @@ int main(){
                         ) {
                     screenMovement = 0;
                     gameState = EState::movingScreen;
+                    m.pause();
+                    gameState = EState::movingScreen;
+                    guardGone = false;
+                    timeSinceLastAnimGuard = 0;
                 }
             }
 

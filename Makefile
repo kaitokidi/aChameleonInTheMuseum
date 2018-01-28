@@ -48,8 +48,10 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp 
-OBJECTS       = main.o
+SOURCES       = main.cpp \
+		Portada.cpp 
+OBJECTS       = main.o \
+		Portada.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -101,7 +103,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		xameleon.pro  main.cpp
+		xameleon.pro Portada.hpp main.cpp \
+		+= \
+		Portada.cpp
 QMAKE_TARGET  = xameleon
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = xameleon
@@ -277,8 +281,11 @@ compiler_clean:
 
 ####### Compile
 
-main.o: main.cpp 
+main.o: main.cpp Portada.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+Portada.o: Portada.cpp Portada.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Portada.o Portada.cpp
 
 ####### Install
 
