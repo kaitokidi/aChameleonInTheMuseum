@@ -173,7 +173,7 @@ int main(){
     } else std::cout << "not oppened quadres file " << std::endl;
 
 
-    int quadreIndex = 0;
+    int quadreIndex = 9;
 
     Quadre* quadreToPick = new Quadre;
     quadreToPick->painting.loadFromFile("res/quadres/"+quadreDescriptors[quadreIndex].name);
@@ -367,24 +367,27 @@ int main(){
         if(gameState == EState::ending){
             static float timer = 0.0;
             timer += deltatime;
-            sf::Texture ending;
-            ending.loadFromFile("res/quadres/ending.png");
-            quadreToDraw->setTexture(ending);
-            int currentfinalFrame = 0;
-            const int finalFrames = 3;
+            quadreToDraw->painting.loadFromFile("res/quadres/ending.png");
+            quadreToDraw->setTexture(quadreToDraw->painting, true);
+            static int currentfinalFrame = 0;
+            const int finalFrames = 4;
             const int finalframeheight = quadreToDraw->getGlobalBounds().height;
-            const int finalframeSize = quadreToDraw->getGlobalBounds().width;
+            const int finalframeSize = quadreToDraw->getGlobalBounds().width/finalFrames;
             quadreToDraw->setTextureRect( sf::IntRect(currentfinalFrame*finalframeSize,0,finalframeSize,finalframeheight));
             if(timer >= 1){
-                currentfinalFrame = std::min(finalFrames-1,++currentfinalFrame);
-                quadreToDraw->setTextureRect( sf::IntRect(currentfinalFrame*finalframeSize,0,finalframeSize,finalframeheight));
-                timer = 0;
+                currentfinalFrame++;
+                if(currentfinalFrame >= finalFrames){
+                    quadreToDraw->setTextureRect( sf::IntRect(3*finalframeSize,0,finalframeSize,finalframeheight));
+                    if(timer >= 3){
+                        portada.display(&window, "res/end.png");
+                        window.close();
+                    }
+                }else {
+                    currentfinalFrame = std::min(finalFrames-1,currentfinalFrame);
+                    quadreToDraw->setTextureRect( sf::IntRect(currentfinalFrame*finalframeSize,0,finalframeSize,finalframeheight));
+                    timer = 0;
+                }
             }
-
-            portada.display(&window, "res/end.png");
-            exit(0);
-
-
         }
         else if(gameState == EState::movingScreen){
 

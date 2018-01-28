@@ -98,12 +98,34 @@ quadre_6_frame.png
 #nomquadre.png
 quadre_7_frame.png
 #posxIni
-0
-0
+106
+135
 0
 #posxdest
 428
 91
+0
+--- Quadre8
+#nomquadre.png
+quadre_8.png
+#posxIni
+210
+607
+0
+#posxdest
+140
+145
+0
+--- Quadre9
+#nomquadre.png
+quadre_9.png
+#posxIni
+0
+0
+0
+#posxdest
+156
+530
 0
 --- lastlast
 #nomquadre.png

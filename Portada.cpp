@@ -85,7 +85,7 @@
                     dark.setPosition(window->getSize().x/2,window->getSize().y/2);
                     float time = 0;
                     float alpha = 255;
-                    while(!introDone and wantAnimation){
+                    while(!introDone && wantAnimation){
                         dark.setColor(sf::Color(0,0,0,int(alpha)));
                         time += timer.restart().asSeconds();
                         if(time > 0.05){
@@ -133,7 +133,7 @@
         dark.setPosition(window->getSize().x/2,window->getSize().y/2);
         float time = 0;
         float alpha = 0.1;
-        while(closing and wantAnimation){            
+        while(closing && wantAnimation){
             dark.setColor(sf::Color(0,0,0,int(alpha)));
             time += timer.restart().asSeconds();
             if(time > 0.05){
