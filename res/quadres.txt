@@ -13,9 +13,9 @@ quadre_1_frame.png
 #nomquadre.png\
 quadre_2_frame.png
 #posxIni
-123
+120
 #posYini
-160
+195
 #angleIni
 0
 #posxdest
@@ -49,9 +49,9 @@ quadre_4_frame.png
 #angleIni
 0
 #posxdest
-208
+220
 #posydest
-230
+232
 #angledest
 0
 #Aqui acaba el descriptor, cal tenir el $

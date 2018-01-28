@@ -68,9 +68,10 @@ struct QuadreDescriptor{
 };
 
 struct Quadre : public sf::Sprite {
-    sf::Texture painting;
     Anchor init;
     Anchor dest;
+    sf::Texture painting;
+    int indexInDescriptors;
 };
 
 enum EState {
@@ -104,11 +105,15 @@ int main(){
 
 
     Portada portada;
+    portada.notAnimation();
     portada.display(&window, "res/portada0.png");
-
+    portada.animation();
+    portada.display(&window, "res/portada1.png");
+    portada.display(&window, "res/controls.png");
 
 
     sf::Music m;
+    m.openFromFile("res/attack.ogg");
     m.openFromFile("res/gramatik_just_jammin.ogg");
     m.setLoop(true);
     m.setVolume(75);
@@ -175,6 +180,7 @@ int main(){
     quadreToPick->setTexture(quadreToPick->painting);
     quadreToPick->init = quadreDescriptors[quadreIndex].init;
     quadreToPick->dest = quadreDescriptors[quadreIndex].dest;
+    quadreToPick->indexInDescriptors = quadreIndex;
     ++quadreIndex;
 
     Quadre* quadreToDraw = new Quadre;
@@ -182,6 +188,7 @@ int main(){
     quadreToDraw->setTexture(quadreToDraw->painting);
     quadreToDraw->init = quadreDescriptors[quadreIndex].init;
     quadreToDraw->dest = quadreDescriptors[quadreIndex].dest;
+    quadreToDraw->indexInDescriptors = quadreIndex;
     ++quadreIndex;
 
     Quadre* quadreForTransition = new Quadre;
@@ -189,6 +196,7 @@ int main(){
     quadreForTransition->setTexture(quadreForTransition->painting);
     quadreForTransition->init = quadreDescriptors[quadreIndex].init;
     quadreForTransition->dest = quadreDescriptors[quadreIndex].dest;
+    quadreForTransition->indexInDescriptors = quadreIndex;
     ++quadreIndex;
 
 
@@ -271,7 +279,7 @@ int main(){
 
 
 
-    std::vector<sf::Sprite> overbgs(0);
+    std::vector<sf::Sprite> overbgs(2);
     std::vector<sf::Texture> overbgsTex (1);
     overbgsTex[0].loadFromFile("res/overbg0.png");
 
@@ -283,8 +291,6 @@ int main(){
         const int OVBG_X = overbgs[0].getGlobalBounds().width;
         overbgs[i].setPosition(overbgs[i].getGlobalBounds().width/2+i*OVBG_X,overbgs[i].getGlobalBounds().height/2);
     }
-//    const int OVBG_Y = overbgs[0].getGlobalBounds().height;
-  //  const int HALF_OVBG_X = overbgs[0].getGlobalBounds().width/2;
 
 
     quadreToPick->setOrigin(quadreToPick->getGlobalBounds().width/2,quadreToPick->getGlobalBounds().height/2);
@@ -301,6 +307,8 @@ int main(){
 
 
     bool guardGone = false;
+    bool guardAnimated = true;
+    bool animationDone = false;
     sf::Sprite guardS;
     sf::Texture guardT;
 
@@ -309,12 +317,14 @@ int main(){
 
     float timeSinceLastAnimGuard = 0;
     float guardAnimTimer = 0.2;
+    int guardActions = 0;
     int currentGuardFrame = 0;
     const int GUARD_FRAMES = 4;
     const int GUARD_FRAME_WIDTH = guardS.getGlobalBounds().width/GUARD_FRAMES;
     const int GUARD_HEIGHT = guardS.getGlobalBounds().height;
     guardS.setTextureRect(sf::IntRect(currentGuardFrame*GUARD_FRAME_WIDTH, 0,
                                                   GUARD_FRAME_WIDTH, GUARD_HEIGHT));
+    guardS.setOrigin(guardS.getGlobalBounds().width/2,0);
 
     guardS.setPosition(-800, BG_Y-guardS.getGlobalBounds().height-10);
 
@@ -342,6 +352,8 @@ int main(){
                     //m.pause();
                     gameState = EState::movingScreen;
                     guardGone = false;
+                    guardAnimated = true;
+                    animationDone = false;
                     timeSinceLastAnimGuard = 0;
                 }
                 //Default
@@ -385,9 +397,10 @@ int main(){
 
                     quadreToPick = quadreToDraw;
                     quadreToDraw = quadreForTransition;
-                    if(quadreIndex >= quadreDescriptors.size()) quadreIndex = quadreDescriptors.size()-1;
 
+                    if(quadreIndex >= quadreDescriptors.size()) quadreIndex = quadreDescriptors.size()-1;
                     quadreForTransition = new Quadre();
+                    quadreForTransition->indexInDescriptors = quadreIndex;
                     quadreForTransition->painting.loadFromFile("res/quadres/"+quadreDescriptors[quadreIndex].name);
                     quadreForTransition->setTexture(quadreForTransition->painting);
                     quadreForTransition->init = quadreDescriptors[quadreIndex].init;
@@ -407,21 +420,110 @@ int main(){
             }
             else {
                 const float guardSpeed = 400;
-                guardS.move(guardSpeed*deltatime,0);
-                timeSinceLastAnimGuard += deltatime;
 
-                if(timeSinceLastAnimGuard >= guardAnimTimer){
-                    m.setVolume(m.getVolume()*0.5);
+                if(!guardAnimated){
 
-                    timeSinceLastAnimGuard = 0;
-                    currentGuardFrame = (currentGuardFrame + 1)%GUARD_FRAMES;
-                    guardS.setTextureRect(sf::IntRect(currentGuardFrame*GUARD_FRAME_WIDTH, 0,
-                                                                  GUARD_FRAME_WIDTH, GUARD_HEIGHT));
+                    timeSinceLastAnimGuard += deltatime;
+
+                    if(guardActions == 0) {
+                        if(timeSinceLastAnimGuard >= 1){
+                            guardS.setScale(-1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.5){
+                            guardS.setScale(1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 2.2){
+                            guardAnimated = true;
+                        }
+                    }
+                    else if(guardActions == 1) {
+                        if(timeSinceLastAnimGuard >= 1){
+                            guardS.setScale(-1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.5){
+                            guardS.setScale(1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 2.2){
+                            guardS.setScale(-1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 2.5){
+                            guardS.setScale(1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 2.9){
+                            guardAnimated = true;
+                        }
+                    }
+
+                    else if(guardActions == 2) {
+                        if(timeSinceLastAnimGuard >= 1){
+                            guardS.setScale(-1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.2){
+                            guardS.setScale(1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.4){
+                            guardS.setScale(-1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.6){
+                            guardS.setScale(1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.8){
+                            guardS.setScale(-1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 2.0){
+                            guardS.setScale(1.f,1.f);
+                        }
+                        if(timeSinceLastAnimGuard >= 2.4){
+                            guardAnimated = true;
+                        }
+                    }
+                    else if(guardActions == 3) {
+                        if(timeSinceLastAnimGuard >= 1){
+                            guardS.setScale(-1,1);
+                        }
+                        if(timeSinceLastAnimGuard >= 3){
+                            guardAnimated = true;
+                        }
+                    }
+                    else if(guardActions == 4) {
+                        if(timeSinceLastAnimGuard >= 1.4){
+                            guardAnimated = true;
+                        }
+                    }
+                    else if(guardActions == 5) {
+                        if(timeSinceLastAnimGuard >= 0.5){
+                            guardS.setRotation(5*std::abs(std::sin(timeSinceLastAnimGuard*10))/2.5);
+                        }
+                        if(timeSinceLastAnimGuard >= 1.4){
+                            guardAnimated = true;
+                        }
+                    }
+
+                }
+                else {
+                    guardS.move(guardSpeed*deltatime,0);
+                    timeSinceLastAnimGuard += deltatime;
+
+                    if(timeSinceLastAnimGuard >= guardAnimTimer){
+                        m.setVolume(m.getVolume()*0.5);
+
+                        timeSinceLastAnimGuard = 0;
+                        currentGuardFrame = (currentGuardFrame + 1)%GUARD_FRAMES;
+                        guardS.setTextureRect(sf::IntRect(currentGuardFrame*GUARD_FRAME_WIDTH, 0,
+                                                                      GUARD_FRAME_WIDTH, GUARD_HEIGHT));
+                    }
                 }
 
                 if(guardS.getPosition().x >= BG_X +270){
                     guardS.setPosition(sf::Vector2f(-800,guardS.getPosition().y));
                     guardGone = true;
+                }
+
+                if(!animationDone && guardS.getPosition().x >= BG_X*0.75){
+                    guardAnimated = false;
+                    animationDone = true;
+                    timeSinceLastAnim = 0;
+                    guardActions = std::rand()%6;
                 }
 
             }
@@ -462,12 +564,12 @@ int main(){
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
                 movement.x = -1* speedCham*deltatime;
             }
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
                 chameleon.chameleonColour.rotate(rotationAngleCham*deltatime);
                 chameleon.chameleonLines.rotate(rotationAngleCham*deltatime);
                 movement.x = 0.001;
             }
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
                 chameleon.chameleonColour.rotate(-1*rotationAngleCham*deltatime);
                 chameleon.chameleonLines.rotate(-1*rotationAngleCham*deltatime);
                 movement.x = 0.001;
@@ -492,9 +594,9 @@ int main(){
             chameleon.chameleonColour.move(movement);
             chameleon.chameleonLines.move(movement);
 
-            if(chameleon.chameleonColour.getPosition().y > 3*BG_Y/5){
-                chameleon.chameleonLines.setPosition(chameleon.chameleonLines.getPosition().x, 3*BG_Y/5);
-                chameleon.chameleonColour.setPosition(chameleon.chameleonColour.getPosition().x, 3*BG_Y/5);
+            if(chameleon.chameleonColour.getPosition().y > 3*BG_Y/4){
+                chameleon.chameleonLines.setPosition(chameleon.chameleonLines.getPosition().x, 3*BG_Y/4);
+                chameleon.chameleonColour.setPosition(chameleon.chameleonColour.getPosition().x, 3*BG_Y/4);
             }
 
             static int onetimeC = 0;
@@ -579,22 +681,24 @@ int main(){
             }
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::V) && chameleon.chameleonLines.getPosition().x > HALF_BG_X){
-               // oneTimeV = 1;
-                float cang = chameleon.chameleonLines.getRotation();
+                //float cang = chameleon.chameleonLines.getRotation();
                 sf::Vector2f cpos = chameleon.chameleonLines.getPosition();
-                sf::Vector2f qpos = quadreToDraw->getPosition()- sf::Vector2f(quadreToDraw->getGlobalBounds().width/2,
+
+                sf::Vector2f qpos = quadreToDraw->getPosition() - sf::Vector2f(quadreToDraw->getGlobalBounds().width/2,
                                                                               quadreToDraw->getGlobalBounds().height/2);
-                sf::Vector2f qinipos = quadreToPick->getPosition()- sf::Vector2f(quadreToPick->getGlobalBounds().width/2,
-                                                                                 quadreToPick->getGlobalBounds().height/2);
 
-                QuadreDescriptor qdes = quadreDescriptors[quadreIndex-2];
-                //std::cout << "namedes-> " << qdes.name << std::endl;
-                QuadreDescriptor qini = quadreDescriptors[quadreIndex-3];
-                //std::cout << "nameini-> " << qini.name << std::endl;
+                sf::Vector2f qinipos = quadreToPick->getPosition() - sf::Vector2f(quadreToPick->getGlobalBounds().width/2,
+                                                                                  quadreToPick->getGlobalBounds().height/2);
 
-/*
-                std::cout << "chamrespecte q2: "<< cpos.x-qpos.x << " , " << cpos.y-qpos.y << std::endl;
-                std::cout << "cham: "<< cpos.x << " , " << cpos.y << std::endl;
+                QuadreDescriptor qdes = quadreDescriptors[quadreToDraw->indexInDescriptors];
+//                std::cout << "namedes-> " << qdes.name << " index ->" << quadreToPick->indexInDescriptors << std::endl;
+                QuadreDescriptor qini = quadreDescriptors[quadreToPick->indexInDescriptors];
+            //    std::cout << "nameini-> " << qini.name << " index ->" << quadreToDraw->indexInDescriptors <<std::endl;
+
+
+//                std::cout << "chamrespecte q2: "<< cpos.x-qpos.x << " , " << cpos.y-qpos.y << std::endl;
+
+   /*             std::cout << "cham: "<< cpos.x << " , " << cpos.y << std::endl;
                 std::cout << "dest: "<< qpos.x+qdes.dest.posx << " , " << qpos.y+qdes.dest.posy << std::endl;
                 std::cout << "inicham: "<< anchorWhenCoppyed.posx << " , " << anchorWhenCoppyed.posy << std::endl;
                 std::cout << "iniq;  " << qinipos.x+qini.init.posx << " , " << qinipos.y+qini.init.posy << std::endl;
@@ -607,8 +711,13 @@ int main(){
                               ( (anchorWhenCoppyed.posx > (qinipos.x+qini.init.posx - 80))
                              && (anchorWhenCoppyed.posx < (qinipos.x+qini.init.posx + 80))
                              && (anchorWhenCoppyed.posy > (qinipos.y+qini.init.posy - 80))
-                             && (anchorWhenCoppyed.posy < (qinipos.y+qini.init.posy + 80)) )<< std::endl;*/
+                             && (anchorWhenCoppyed.posy < (qinipos.y+qini.init.posy + 80)) )<< std::endl;
 
+                std::cout << "According to this, i started at " <<
+                            (anchorWhenCoppyed.posx - qinipos.x)
+                            << " " <<
+                            (anchorWhenCoppyed.posy - qinipos.y)
+                            << std::endl;*/
 
                 if(  (cpos.x > (qpos.x+qdes.dest.posx - 40))
                   && (cpos.x < (qpos.x+qdes.dest.posx + 40))
@@ -623,9 +732,10 @@ int main(){
                         ) {
                     screenMovement = 0;
                     gameState = EState::movingScreen;
-                    m.pause();
                     gameState = EState::movingScreen;
                     guardGone = false;
+                    guardAnimated = true;
+                    animationDone = false;
                     timeSinceLastAnimGuard = 0;
                 }
             }
@@ -668,9 +778,6 @@ int main(){
             window.draw(bgs[i]);
         }
 
-        for(int i = 0; i < overbgs.size(); ++i){
-            window.draw(overbgs[i]);
-        }
 
         window.draw(*quadreToPick);
         window.draw(*quadreToDraw);
@@ -678,6 +785,11 @@ int main(){
 
         window.draw(chameleon.chameleonColour);
         window.draw(chameleon.chameleonLines);
+
+        for(int i = 0; i < overbgs.size(); ++i){
+            window.draw(overbgs[i]);
+        }
+
 /*
             window.setView(window.getDefaultView());
             window.clear(c);
