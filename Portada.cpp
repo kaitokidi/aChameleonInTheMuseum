@@ -78,7 +78,7 @@
                     sf::Texture text;
                     bool closing = true;
                     sf::Image black;
-                    black.create(window->getSize().x, window->getSize().y, sf::Color::Black);
+                    black.create(window->getSize().x, window->getSize().y+200, sf::Color::Black);
                     text.loadFromImage(black);
                     dark.setTexture(text);
                     dark.setOrigin(dark.getLocalBounds().width/2,dark.getLocalBounds().height/2);
@@ -126,7 +126,7 @@
         sf::Texture text;
         bool closing = true;
         sf::Image black;
-        black.create(window->getSize().x, window->getSize().y, sf::Color::Black);
+        black.create(window->getSize().x, window->getSize().y+200, sf::Color::Black);
         text.loadFromImage(black);
         dark.setTexture(text);
         dark.setOrigin(dark.getLocalBounds().width/2,dark.getLocalBounds().height/2);

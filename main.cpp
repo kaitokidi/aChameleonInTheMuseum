@@ -173,7 +173,7 @@ int main(){
     } else std::cout << "not oppened quadres file " << std::endl;
 
 
-    int quadreIndex = 9;
+    int quadreIndex = 0;
 
     Quadre* quadreToPick = new Quadre;
     quadreToPick->painting.loadFromFile("res/quadres/"+quadreDescriptors[quadreIndex].name);
